@@ -1,0 +1,17 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='192' height='192' viewBox='0 0 192 192'>
+  <defs>
+    <linearGradient id='bg' x1='0' y1='0' x2='1' y2='1'>
+      <stop offset='0%' stop-color='#0f172a'/>
+      <stop offset='100%' stop-color='#1e1b4b'/>
+    </linearGradient>
+    <linearGradient id='mark' x1='0' y1='0' x2='1' y2='1'>
+      <stop offset='0%' stop-color='#ff6b35'/>
+      <stop offset='100%' stop-color='#fc4c02'/>
+    </linearGradient>
+  </defs>
+  <!-- Background circle -->
+  <rect width='192' height='192' rx='42.24' fill='url(#bg)'/>
+  <!-- Abstract speed chevron mark -->
+  <polygon points='52.800000000000004,138.24 110.39999999999999,53.760000000000005 139.2,53.760000000000005 139.2,80.64 96,80.64 153.60000000000002,138.24' fill='url(#mark)'/>
+  <polygon points='52.800000000000004,168.96 110.39999999999999,84.48 139.2,84.48 139.2,111.35999999999999 96,111.35999999999999 153.60000000000002,168.96' fill='url(#mark)' opacity='0.55'/>
+</svg>
