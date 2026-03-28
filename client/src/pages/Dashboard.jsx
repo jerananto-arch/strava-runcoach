@@ -7,10 +7,27 @@ import ZoneBar from "../components/ZoneBar";
 import { VolumeChart, FitnessChart, EfficiencyChart, CadenceChart } from "../components/TrendCharts";
 import { fmtTime, fmtWeek } from "../utils/format";
 import { Activity, Flame, Clock, TrendingUp, RefreshCw, ChevronRight } from "lucide-react";
+import { api } from "../utils/api";
+import { useState } from "react";
 
 export default function Dashboard() {
   const nav = useNavigate();
   const { reports, loading, error } = useReports();
+  const [generating, setGenerating] = useState(false);
+  const [genError, setGenError] = useState(null);
+
+  async function handleGenerate() {
+    setGenerating(true);
+    setGenError(null);
+    try {
+      await api.generateReport();
+      window.location.reload();
+    } catch (e) {
+      setGenError("Failed to generate report. Try again.");
+    } finally {
+      setGenerating(false);
+    }
+  }
 
   if (loading) return <Loader />;
   if (error)   return <Error msg={error} />;
@@ -31,16 +48,29 @@ export default function Dashboard() {
               <span className="text-slate-500 text-base font-normal ml-2">· {weeksToRace}w to race</span>
             </h1>
           </div>
-          <button
-            onClick={() => nav("/trends")}
-            className="flex items-center gap-1 text-xs text-slate-400 bg-[#1e293b] px-3 py-2 rounded-xl"
-          >
-            <TrendingUp size={12} /> Trends
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleGenerate}
+              disabled={generating}
+              className="flex items-center gap-1 text-xs text-white bg-brand-orange px-3 py-2 rounded-xl disabled:opacity-50 active:scale-95 transition-transform"
+            >
+              <RefreshCw size={12} className={generating ? "animate-spin" : ""} />
+              {generating ? "Generating…" : "Generate Report"}
+            </button>
+            <button
+              onClick={() => nav("/trends")}
+              className="flex items-center gap-1 text-xs text-slate-400 bg-[#1e293b] px-3 py-2 rounded-xl"
+            >
+              <TrendingUp size={12} /> Trends
+            </button>
+          </div>
         </div>
         <div className="text-xs text-slate-500 mt-1">{fmtWeek(weekStart, weekEnd)}</div>
       </div>
 
+      {genError && (
+        <div className="mx-4 mt-3 text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-2">{genError}</div>
+      )}
       <div className="px-4 pt-4 space-y-4">
         {/* Volume summary */}
         <div className="grid grid-cols-3 gap-3">
@@ -160,12 +190,32 @@ function Error({ msg }) {
 }
 
 function Empty() {
+  const [generating, setGenerating] = useState(false);
+
+  async function handleGenerate() {
+    setGenerating(true);
+    try {
+      await api.generateReport();
+      window.location.reload();
+    } finally {
+      setGenerating(false);
+    }
+  }
+
   return (
     <div className="min-h-screen bg-[#0a0f1e] flex items-center justify-center p-6">
-      <div className="text-center space-y-3">
+      <div className="text-center space-y-4">
         <div className="text-4xl">🏃</div>
         <div className="text-white font-semibold">No reports yet</div>
-        <div className="text-slate-400 text-sm">Your first report will generate this Sunday at 18:00 WIB.</div>
+        <div className="text-slate-400 text-sm">Tap below to generate your first report now.</div>
+        <button
+          onClick={handleGenerate}
+          disabled={generating}
+          className="flex items-center gap-2 mx-auto text-sm text-white bg-brand-orange px-5 py-3 rounded-xl disabled:opacity-50 active:scale-95 transition-transform"
+        >
+          <RefreshCw size={14} className={generating ? "animate-spin" : ""} />
+          {generating ? "Generating…" : "Generate Report"}
+        </button>
       </div>
     </div>
   );
